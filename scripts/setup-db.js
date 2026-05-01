@@ -60,6 +60,8 @@ async function setup() {
       { type: 'string', name: 'paymentStatus', required: true },
       { type: 'boolean', name: 'checkedIn', required: false, default: false },
       { type: 'boolean', name: 'foodCollected', required: false, default: false },
+      { type: 'string', name: 'checkInTime', required: false },
+      { type: 'string', name: 'foodTime', required: false },
     ];
 
     for (const attr of attributes) {
