@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: 260 50% 4%; /* Deep Ultra Violet Black */
+    --bg-surface: 260 40% 8%; /* Slightly lighter violet surface */
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --accent-purple: 270 100% 60%; /* Vibrant neon purple */
+    --accent-violet: 290 100% 70%; /* Neon magenta-violet */
+    --accent-teal: 173 90% 50%; /* Bright teal */
+    --accent-amber: 38 100% 55%; /* Bright amber */
+    --accent-red: 350 100% 65%; /* Bright red */
+    --text-primary: 0 0% 100%; /* Pure white */
+    --text-muted: 260 10% 65%; /* Purplish grey */
+    --text-subtle: 260 15% 40%;
+
+
+    --background: var(--bg-base);
+    --foreground: var(--text-primary);
+    
+    --card: var(--bg-glass);
+    --card-foreground: var(--text-primary);
+
+    --popover: var(--bg-surface);
+    --popover-foreground: var(--text-primary);
+
+    --primary: var(--accent-purple);
+    --primary-foreground: var(--text-primary);
+
+    --secondary: var(--bg-surface);
+    --secondary-foreground: var(--text-primary);
+
+    --muted: var(--bg-surface);
+    --muted-foreground: var(--text-muted);
+
+    --accent: var(--accent-violet);
+    --accent-foreground: var(--text-primary);
+
+    --destructive: var(--accent-red);
+    --destructive-foreground: var(--text-primary);
+
+    --border: var(--border-glass);
+    --input: var(--border-glass);
+    --ring: var(--accent-purple);
+
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-purple-700;
+  }
+}
+
+/* Custom Scanner Brackets */
+.scanner-bracket {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-color: hsl(var(--accent-purple));
+  z-index: 20;
+}
+.scanner-bracket-tl {
+  top: 0; left: 0;
+  border-top: 4px solid;
+  border-left: 4px solid;
+}
+.scanner-bracket-tr {
+  top: 0; right: 0;
+  border-top: 4px solid;
+  border-right: 4px solid;
+}
+.scanner-bracket-bl {
+  bottom: 0; left: 0;
+  border-bottom: 4px solid;
+  border-left: 4px solid;
+}
+.scanner-bracket-br {
+  bottom: 0; right: 0;
+  border-bottom: 4px solid;
+  border-right: 4px solid;
+}
