@@ -49,7 +49,9 @@ export function Students() {
           checkedIn: false,
           foodCollected: false,
           checkInTime: '',
-          foodTime: ''
+          foodTime: '',
+          amountPaid: 0, // Added missing required field
+          paymentStatus: 'Pending' // Added missing required field
         }
       );
       toast.success(`Student ${newStudent.id} added successfully`);
