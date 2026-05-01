@@ -3,16 +3,65 @@ import { useStudents } from '@/hooks/useStudents';
 import { StudentTable } from '@/components/students/StudentTable';
 import { StudentCard } from '@/components/students/StudentCard';
 import { Input } from '@/components/ui/input';
-import { Search, XCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Plus, UserPlus } from 'lucide-react';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { databases, DB_ID, STUDENTS_COLLECTION_ID } from '@/lib/appwrite';
+import { ID } from 'appwrite';
+import { toast } from 'sonner';
 
 type FilterType = 'All' | 'Checked In' | 'Food Done' | 'Pending';
 
 export function Students() {
-  const { students, loading } = useStudents();
+  const { students, loading, fetchStudents } = useStudents();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('All');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newStudent, setNewStudent] = useState({ id: '', name: '', branch: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAddStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStudent.id) {
+      toast.error('Student ID is required');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      await databases.createDocument(
+        DB_ID,
+        STUDENTS_COLLECTION_ID,
+        ID.unique(),
+        {
+          studentId: newStudent.id,
+          name: newStudent.name || newStudent.id, // Fallback to ID if name is empty
+          branch: newStudent.branch || 'General',
+          checkedIn: false,
+          foodCollected: false,
+          checkInTime: '',
+          foodTime: ''
+        }
+      );
+      toast.success(`Student ${newStudent.id} added successfully`);
+      setIsAddDialogOpen(false);
+      setNewStudent({ id: '', name: '', branch: '' });
+      fetchStudents();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || 'Failed to add student');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const filteredStudents = useMemo(() => {
     return students.filter(student => {
@@ -35,9 +84,75 @@ export function Students() {
 
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-6 animate-fade-in-up">
-      <header>
-        <h1 className="font-syne text-2xl lg:text-3xl font-bold mb-2">Student List</h1>
-        <p className="text-text-muted">Manage and view all registered students.</p>
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-syne text-2xl lg:text-3xl font-bold mb-2">Student List</h1>
+          <p className="text-text-muted">Manage and view all registered students.</p>
+        </div>
+        
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-accent-purple hover:bg-accent-purple/90 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Student
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-bg-surface border-border-glass">
+            <DialogHeader>
+              <DialogTitle className="font-syne text-xl">Add New Student</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Label htmlFor="sid">Student ID (Required)</Label>
+                <Input 
+                  id="sid" 
+                  placeholder="e.g. 21A91A0501" 
+                  value={newStudent.id}
+                  onChange={(e) => setNewStudent({...newStudent, id: e.target.value})}
+                  className="bg-bg-base border-border-glass"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  placeholder="e.g. John Doe" 
+                  value={newStudent.name}
+                  onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
+                  className="bg-bg-base border-border-glass"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="branch">Branch / Department</Label>
+                <Input 
+                  id="branch" 
+                  placeholder="e.g. CSE" 
+                  value={newStudent.branch}
+                  onChange={(e) => setNewStudent({...newStudent, branch: e.target.value})}
+                  className="bg-bg-base border-border-glass"
+                />
+              </div>
+              <DialogFooter className="pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsAddDialogOpen(false)}
+                  className="border-border-glass"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="bg-accent-purple hover:bg-accent-purple/90 text-white"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Adding...' : 'Add Student'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </header>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
