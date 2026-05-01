@@ -43,7 +43,7 @@ npm install
 Create a `.env` file in the root directory:
 ```env
 VITE_APPWRITE_PROJECT_ID="your_project_id"
-VITE_APPWRITE_ENDPOINT="https://sgp.cloud.appwrite.io/v1"
+VITE_APPWRITE_ENDPOINT="your_endpoint"
 VITE_DB_ID="your_db_id"
 VITE_STUDENTS_COL="students"
 VITE_QR_SECRET="your_secret_key_for_qr"
