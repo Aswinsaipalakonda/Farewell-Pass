@@ -28,9 +28,14 @@ export function Login() {
     try {
       await login(email, password);
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      let message = err.message || 'Failed to sign in';
+      if (message === 'Failed to fetch' || message.includes('fetch')) {
+        message = 'Connection Failed: Please check your Internet or Appwrite CORS settings.';
+      }
+      setError(message);
       setLoading(false);
     }
+
   };
 
   return (
