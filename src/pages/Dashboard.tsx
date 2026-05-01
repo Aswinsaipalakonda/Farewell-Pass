@@ -4,6 +4,7 @@ import { StatCard } from '@/components/dashboard/StatCard';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Users, UserCheck, Utensils, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getGreeting } from '@/lib/utils';
 
 export function Dashboard() {
   const { stats, loading: statsLoading } = useStats();
@@ -15,7 +16,7 @@ export function Dashboard() {
     <div className="p-4 lg:p-8 max-w-7xl mx-auto w-full space-y-8 animate-fade-in-up">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-syne text-2xl lg:text-3xl font-bold">Good morning, CR 👋</h1>
+          <h1 className="font-syne text-2xl lg:text-3xl font-bold">{getGreeting()}, CR 👋</h1>
           <p className="text-text-muted mt-1">{today}</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-teal/10 border border-accent-teal/20 w-fit">
