@@ -34,10 +34,10 @@ export function StudentTable({ students }: StudentTableProps) {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8 border border-border-glass">
                     <AvatarFallback className="bg-bg-surface text-xs text-text-primary">
-                      {student.name.substring(0, 2).toUpperCase()}
+                      {(student.name || student.studentId).substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-medium">{student.name}</span>
+                  <span className="font-medium">{student.name || student.studentId}</span>
                 </div>
               </TableCell>
               <TableCell className="text-text-muted">{student.studentId}</TableCell>

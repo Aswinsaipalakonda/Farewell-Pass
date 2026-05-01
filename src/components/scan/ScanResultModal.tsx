@@ -38,7 +38,7 @@ export function ScanResultModal({ open, student, onClose, onAction, loading }: S
             {isCompleted && <CheckCircle2 className="w-8 h-8" />}
           </div>
           
-          <h2 className="text-2xl font-syne font-bold">{student.name}</h2>
+          <h2 className="text-2xl font-syne font-bold">{student.name || student.studentId}</h2>
           <p className="text-text-muted mt-1">{student.studentId}</p>
           {student.branch && <p className="text-sm text-text-subtle">{student.branch}</p>}
         </div>

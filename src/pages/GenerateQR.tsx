@@ -39,8 +39,9 @@ export function GenerateQR() {
         const id = ids[i];
         const payload = await generateQRPayload(id);
         const dataUrl = await QRCode.toDataURL(payload, {
-          width: 300,
-          margin: 2,
+          width: 800, // High resolution
+          margin: 6, // Larger white border helps scanners identify it on screens
+          errorCorrectionLevel: 'H', // High error correction
           color: {
             dark: '#000000',
             light: '#ffffff',
@@ -59,6 +60,11 @@ export function GenerateQR() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const downloadSingleQR = (item: QRItem) => {
+    saveAs(item.dataUrl, `${item.id}_QR.png`);
+    toast.success(`Downloaded ${item.id} QR`);
   };
 
   const handleDownloadZip = async () => {
@@ -154,12 +160,21 @@ export function GenerateQR() {
               {/* Grid for web viewing */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-[500px] overflow-y-auto pr-2 print:hidden">
                 {qrItems.map(item => (
-                  <Card key={item.id} className="bg-white border-none overflow-hidden aspect-[3/4] flex flex-col">
+                  <Card key={item.id} className="bg-white border-none overflow-hidden aspect-[3/4] flex flex-col group relative">
                     <div className="p-4 flex-1 flex flex-col items-center justify-center gap-2">
                       <img src={item.dataUrl} alt={`QR for ${item.id}`} className="w-full aspect-square" />
                       <p className="text-black font-mono font-bold text-center text-sm sm:text-base mt-2">
                         {item.id}
                       </p>
+                      <Button 
+                        size="sm" 
+                        variant="secondary"
+                        className="mt-2 h-8 w-full bg-gray-100 hover:bg-gray-200 text-black border-none"
+                        onClick={() => downloadSingleQR(item)}
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Download
+                      </Button>
                     </div>
                   </Card>
                 ))}

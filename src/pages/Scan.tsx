@@ -35,7 +35,28 @@ export function Scan() {
       ]);
 
       if (response.documents.length === 0) {
-        toast.error(`Student ID ${studentId} not found in database.`);
+        // Auto-register student if not found
+        try {
+          const newDoc = await databases.createDocument(DB_ID, STUDENTS_COLLECTION_ID, 'unique()', {
+            studentId: studentId,
+            name: studentId, // Use ID as name if missing
+            checkedIn: false,
+            foodCollected: false,
+            amountPaid: 0,
+            paymentStatus: 'unregistered'
+          });
+          
+          setScannedStudent({
+            $id: newDoc.$id,
+            studentId: newDoc.studentId,
+            name: newDoc.name,
+            checkedIn: newDoc.checkedIn,
+            foodCollected: newDoc.foodCollected,
+          });
+          setIsModalOpen(true);
+        } catch (err) {
+          toast.error(`Student ID ${studentId} not found and registration failed.`);
+        }
         setLoading(false);
         return;
       }
