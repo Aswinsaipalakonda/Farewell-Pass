@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# ✦ FarewellPass 2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+  <img src="src/assets/logo.png" width="120" height="120" alt="FarewellPass Logo">
+  <h3>MVGR College of Engineering · Farewell Event Management</h3>
+  <p>A premium, secure, and futuristic entry & food pass management system.</p>
+</div>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Tech Stack
 
-## React Compiler
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Appwrite](https://img.shields.io/badge/Appwrite-%23FD366E.svg?style=for-the-badge&logo=appwrite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Lucide](https://img.shields.io/badge/Lucide-Icons-purple?style=for-the-badge)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Key Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔐 **Secure QR Generation**: Uses HMAC-SHA256 cryptographic signatures to prevent tampering. QR codes appear as gibberish if scanned with standard apps.
+- 📸 **Real-time Scanning**: Integrated scanner for Class Representatives (CRs) to verify student entry.
+- 🍽️ **Sequential Flow**: Dual-stage verification—Entry Check-in first, then Food Coupon collection.
+- 📊 **Live Dashboard**: Real-time tracking of attendance stats (Total Registered, Checked In, Food Collected).
+- 🎨 **Premium UI**: Modern Glassmorphism design with an "Obsidian & Ultra-Violet" theme and smooth animations.
+- 📱 **Fully Responsive**: Optimized for both Desktop management and Mobile field scanning.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Quick Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clone & Install
+```bash
+git clone https://github.com/Aswinsaipalakonda/Farewell-Pass.git
+cd Farewell-Pass
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Environment Variables
+Create a `.env` file in the root directory:
+```env
+VITE_APPWRITE_PROJECT_ID="your_project_id"
+VITE_APPWRITE_ENDPOINT="https://sgp.cloud.appwrite.io/v1"
+VITE_DB_ID="your_db_id"
+VITE_STUDENTS_COL="students"
+VITE_QR_SECRET="your_secret_key_for_qr"
+VITE_EVENT_KEY="FAREWELL2026"
+APPWRITE_API_KEY="your_api_key_with_database_permissions"
 ```
+
+### 3. Automated Database Setup
+We've included a script to automatically build your Appwrite backend (Collections, Attributes, and Test Data).
+```bash
+node scripts/setup-db.js
+```
+
+### 4. Run Development Server
+```bash
+npm run dev
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+├── scripts/          # Automation & DB setup scripts
+├── src/
+│   ├── assets/       # Brand assets & logos
+│   ├── components/   # UI & Feature components (Dashboard, Scan, etc.)
+│   ├── hooks/        # Custom React hooks (Auth, Stats, Students)
+│   ├── lib/          # Core logic (Appwrite, QR Cryptography)
+│   ├── pages/        # Application views
+│   └── types/        # TypeScript interfaces
+└── public/           # Static assets & icons
+```
+
+---
+
+## 🤝 Support
+Developed for **MVGR College of Engineering**. For issues or feature requests, please contact the admin team.
+
+<div align="center">
+  <p>Created with 💜 for the Class of 2026</p>
+</div>
