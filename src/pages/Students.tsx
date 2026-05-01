@@ -4,7 +4,8 @@ import { StudentTable } from '@/components/students/StudentTable';
 import { StudentCard } from '@/components/students/StudentCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, UserPlus } from 'lucide-react';
+import { Search, XCircle, Plus, UserPlus } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Dialog, 
   DialogContent, 
