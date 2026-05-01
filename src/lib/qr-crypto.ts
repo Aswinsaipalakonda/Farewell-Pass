@@ -47,17 +47,36 @@ export async function generateQRPayload(studentId: string): Promise<string> {
   return `v1:${studentId}:${sig}`;
 }
 
-export async function verifyQRPayload(rawString: string): Promise<{ valid: boolean, studentId?: string }> {
+export async function verifyQRPayload(rawString: string): Promise<{ valid: boolean, studentId?: string, error?: string }> {
   try {
-    // Check for compact format
-    if (!rawString.startsWith('v1:')) {
-      return { valid: false };
+    const cleanString = rawString.trim();
+    
+    // Support legacy JSON format for a transition period if needed
+    if (cleanString.startsWith('ey')) { // base64 of {
+      try {
+        const jsonString = atob(cleanString);
+        const payload = JSON.parse(jsonString);
+        if (payload.studentId && payload.sig) {
+          // Redirect to the rest of the verification logic
+          return verifyLegacy(payload);
+        }
+      } catch (e) {}
     }
 
-    const parts = rawString.split(':');
-    if (parts.length !== 3) return { valid: false };
+    // Check for compact format
+    if (!cleanString.startsWith('v1:')) {
+      console.error("Invalid QR format prefix:", cleanString.substring(0, 5));
+      return { valid: false, error: "WRONG_FORMAT" };
+    }
+
+    const parts = cleanString.split(':');
+    if (parts.length !== 3) {
+      console.error("Invalid QR parts count:", parts.length);
+      return { valid: false, error: "INVALID_PARTS" };
+    }
 
     const [, studentId, sig] = parts;
+    if (!studentId || !sig) return { valid: false, error: "MISSING_DATA" };
 
     const key = await importKey(SECRET_KEY);
     const dataToVerify = `${studentId}:${EVENT_KEY}`;
@@ -76,9 +95,26 @@ export async function verifyQRPayload(rawString: string): Promise<{ valid: boole
       return { valid: true, studentId };
     }
     
-    return { valid: false };
+    console.error("HMAC verification failed for student:", studentId);
+    return { valid: false, error: "AUTH_FAIL" };
   } catch (error) {
-    return { valid: false };
+    console.error("QR Verification exception:", error);
+    return { valid: false, error: "EXCEPTION" };
   }
 }
+
+async function verifyLegacy(payload: any) {
+  try {
+    const key = await importKey(SECRET_KEY);
+    const dataToVerify = `${payload.studentId}:${EVENT_KEY}`;
+    const enc = new TextEncoder();
+    const signatureBuffer = base64ToArrayBuffer(payload.sig);
+    const isValid = await crypto.subtle.verify("HMAC", key, signatureBuffer, enc.encode(dataToVerify));
+    if (isValid) return { valid: true, studentId: payload.studentId };
+    return { valid: false, error: "LEGACY_AUTH_FAIL" };
+  } catch (e) {
+    return { valid: false, error: "LEGACY_EXCEPTION" };
+  }
+}
+
 

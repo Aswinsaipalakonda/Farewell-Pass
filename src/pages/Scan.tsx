@@ -20,10 +20,11 @@ export function Scan() {
     setLoading(true);
 
     try {
-      const { valid, studentId } = await verifyQRPayload(decodedText);
+      const { valid, studentId, error } = await verifyQRPayload(decodedText);
       
       if (!valid || !studentId) {
-        toast.error('✗ Invalid or unrecognized QR code');
+        toast.error(`✗ Invalid QR: ${error || 'Unknown Error'}`);
+        console.error("Scan verification failed:", { decodedText, error });
         setLoading(false);
         return;
       }
