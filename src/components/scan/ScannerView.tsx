@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-import { Button } from '@/components/ui/button';
-import { Flashlight, RefreshCcw } from 'lucide-react';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import { playBeep } from '@/lib/utils';
 
 interface ScannerViewProps {
   onScanSuccess: (decodedText: string) => void;
@@ -9,54 +8,48 @@ interface ScannerViewProps {
 }
 
 export function ScannerView({ onScanSuccess, paused }: ScannerViewProps) {
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const qrRef = useRef<Html5Qrcode | null>(null);
 
   useEffect(() => {
-    // Only initialize if not paused and element exists
-    if (paused) {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error);
-        scannerRef.current = null;
-      }
-      return;
-    }
+    // 1. Setup scanner
+    const html5QrCode = new Html5Qrcode("qr-reader", {
+      verbose: false,
+      formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
+    });
+    qrRef.current = html5QrCode;
 
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { 
+    // 2. Start scanning if not paused
+    if (!paused) {
+      const config = { 
         fps: 10, 
         qrbox: { width: 250, height: 250 },
-        aspectRatio: 1,
-        formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-      },
-      false
-    );
+        aspectRatio: 1.0
+      };
 
-    scanner.render(
-      (text) => {
-        // Automatically pause on success
-        if (scannerRef.current) {
-          scannerRef.current.clear().catch(console.error);
-          scannerRef.current = null;
-        }
-        onScanSuccess(text);
-      },
-      (error) => {
-        // Ignored, continuously checks
-      }
-    );
-
-    scannerRef.current = scanner;
+      html5QrCode.start(
+        { facingMode: "environment" }, // Force Back Camera
+        config,
+        (decodedText) => {
+          playBeep(); // Beep on success
+          html5QrCode.stop().then(() => {
+            onScanSuccess(decodedText);
+          }).catch(console.error);
+        },
+        () => { /* Continuous scanning errors ignored */ }
+      ).catch((err) => {
+        console.error("Camera start failed:", err);
+      });
+    }
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error);
-        scannerRef.current = null;
+      if (qrRef.current && qrRef.current.isScanning) {
+        qrRef.current.stop().catch(console.error);
       }
     };
   }, [paused, onScanSuccess]);
 
   return (
+
     <div className="relative w-full max-w-[320px] mx-auto aspect-square overflow-hidden rounded-2xl bg-black border border-border-glass">
       {/* Custom brackets */}
       <div className="scanner-bracket scanner-bracket-tl"></div>
