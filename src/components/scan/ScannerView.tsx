@@ -33,13 +33,8 @@ export function ScannerView({ onScanSuccess, paused }: ScannerViewProps) {
         { facingMode: "environment" }, 
         config,
         (decodedText) => {
-          // Play sound immediately on detection
-          playBeep(); 
-          
-          // Stop scanning and trigger success
-          html5QrCode.stop().then(() => {
-            onScanSuccess(decodedText);
-          }).catch(console.error);
+          // Trigger success callback
+          onScanSuccess(decodedText);
         },
         () => { /* Ignore errors */ }
       ).catch((err) => {
@@ -48,8 +43,10 @@ export function ScannerView({ onScanSuccess, paused }: ScannerViewProps) {
     }
 
     return () => {
-      if (qrRef.current && qrRef.current.isScanning) {
-        qrRef.current.stop().catch(console.error);
+      if (qrRef.current) {
+        if (qrRef.current.isScanning) {
+          qrRef.current.stop().catch(console.error);
+        }
       }
     };
   }, [paused, onScanSuccess]);

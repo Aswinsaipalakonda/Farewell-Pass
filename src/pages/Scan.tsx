@@ -7,6 +7,8 @@ import { Query } from 'appwrite';
 import { Student } from '@/types';
 import { toast } from 'sonner';
 
+import { playBeep } from '@/lib/utils';
+
 export function Scan() {
   const [scannedStudent, setScannedStudent] = useState<Student | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,11 +25,15 @@ export function Scan() {
       const { valid, studentId, error } = await verifyQRPayload(decodedText);
       
       if (!valid || !studentId) {
-        toast.error(`✗ Invalid QR: ${error || 'Unknown Error'}`);
-        console.error("Scan verification failed:", { decodedText, error });
+        toast.error(`✗ Scan Validation Failed: [${error || 'INVALID_FORMAT'}]`);
+        console.error("Verification failed:", { error, decodedText });
         setLoading(false);
         return;
       }
+
+      // Success: Play sound
+      playBeep();
+
 
       // Flash green effect can be added here if needed
 
