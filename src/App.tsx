@@ -7,26 +7,31 @@ import { Dashboard } from '@/pages/Dashboard';
 import { Scan } from '@/pages/Scan';
 import { Students } from '@/pages/Students';
 import { GenerateQR } from '@/pages/GenerateQR';
+import { Logs } from '@/pages/Logs';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-center" theme="dark" />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        <Route element={<AuthGuard />}>
-          <Route element={<AppShell />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/scan" element={<Scan />} />
-            <Route path="/students" element={<Students />} />
-            <Route path="/generate" element={<GenerateQR />} />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <AuthProvider>
+        <Toaster position="top-center" theme="dark" />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          <Route element={<AuthGuard />}>
+            <Route element={<AppShell />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/scan" element={<Scan />} />
+              <Route path="/students" element={<Students />} />
+              <Route path="/generate" element={<GenerateQR />} />
+              <Route path="/logs" element={<Logs />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            </Route>
           </Route>
-        </Route>
-        
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

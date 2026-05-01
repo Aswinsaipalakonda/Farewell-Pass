@@ -1,18 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ScanLine, Users, QrCode, LogOut } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { LayoutDashboard, ScanLine, Users, QrCode, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
   const { pathname } = useLocation();
-  const { logout } = useAuth();
 
   const links = [
     { to: '/dashboard', icon: LayoutDashboard },
     { to: '/students', icon: Users },
     { to: '/scan', icon: ScanLine, isPrimary: true },
     { to: '/generate', icon: QrCode },
-    { action: logout, icon: LogOut },
+    { to: '/logs', icon: History },
   ];
 
   return (
@@ -37,18 +35,6 @@ export function BottomNav() {
                   </div>
                 </Link>
               </div>
-            );
-          }
-
-          if (link.action) {
-            return (
-              <button
-                key="logout"
-                onClick={link.action}
-                className="flex flex-col items-center justify-center w-full h-full text-text-muted hover:text-accent-red transition-all duration-200 active:scale-95"
-              >
-                <link.icon className="w-5 h-5" />
-              </button>
             );
           }
 

@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { QrCode } from "lucide-react";
+import { QrCode, ArrowRight } from "lucide-react";
 import { Student } from "@/types";
+import { Link } from "react-router-dom";
 
 interface RecentActivityProps {
   students: Student[];
@@ -38,10 +40,16 @@ export function RecentActivity({ students }: RecentActivityProps) {
   return (
     <Card className="glass-card mt-6">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl font-syne">Recent Scans</CardTitle>
-        <Badge variant="outline" className="border-border-glass">
-          {recentEvents.length} Events
-        </Badge>
+        <div className="flex flex-col">
+          <CardTitle className="text-xl font-syne">Recent Scans</CardTitle>
+          <p className="text-xs text-text-muted">Latest activity across the event</p>
+        </div>
+        <Link to="/logs">
+          <Button variant="ghost" size="sm" className="text-accent-purple hover:text-accent-purple hover:bg-accent-purple/10 gap-1 rounded-lg">
+            View All
+            <ArrowRight className="w-3 h-3" />
+          </Button>
+        </Link>
       </CardHeader>
       <CardContent>
         {recentEvents.length === 0 ? (
