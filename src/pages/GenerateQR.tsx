@@ -146,13 +146,9 @@ export function GenerateQR() {
                   <span className="font-medium">{qrItems.length} QRs Ready</span>
                 </div>
                 <div className="flex gap-3">
-                  <Button variant="outline" className="border-border-glass bg-bg-surface hover:bg-bg-glass" onClick={handlePrint}>
-                    <Printer className="w-4 h-4 mr-2" />
-                    Print
-                  </Button>
-                  <Button className="bg-white text-black hover:bg-gray-200" onClick={handleDownloadZip}>
+                  <Button className="bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-700 hover:to-purple-800 text-white" onClick={handleDownloadZip}>
                     <Download className="w-4 h-4 mr-2" />
-                    Download ZIP
+                    Download ZIP (All)
                   </Button>
                 </div>
               </div>

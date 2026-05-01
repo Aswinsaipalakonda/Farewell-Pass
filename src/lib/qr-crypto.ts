@@ -42,29 +42,28 @@ export async function generateQRPayload(studentId: string): Promise<string> {
     enc.encode(dataToSign)
   );
 
-  const payload = {
-    studentId,
-    eventKey: EVENT_KEY,
-    sig: arrayBufferToBase64(signature)
-  };
-
-  return btoa(JSON.stringify(payload));
+  const sig = arrayBufferToBase64(signature);
+  // Return a compact string format instead of JSON to keep QR density low
+  return `v1:${studentId}:${sig}`;
 }
 
 export async function verifyQRPayload(rawString: string): Promise<{ valid: boolean, studentId?: string }> {
   try {
-    const jsonString = atob(rawString);
-    const payload = JSON.parse(jsonString);
-
-    if (!payload.studentId || !payload.sig || payload.eventKey !== EVENT_KEY) {
+    // Check for compact format
+    if (!rawString.startsWith('v1:')) {
       return { valid: false };
     }
 
+    const parts = rawString.split(':');
+    if (parts.length !== 3) return { valid: false };
+
+    const [, studentId, sig] = parts;
+
     const key = await importKey(SECRET_KEY);
-    const dataToVerify = `${payload.studentId}:${EVENT_KEY}`;
+    const dataToVerify = `${studentId}:${EVENT_KEY}`;
     const enc = new TextEncoder();
 
-    const signatureBuffer = base64ToArrayBuffer(payload.sig);
+    const signatureBuffer = base64ToArrayBuffer(sig);
 
     const isValid = await crypto.subtle.verify(
       "HMAC",
@@ -74,7 +73,7 @@ export async function verifyQRPayload(rawString: string): Promise<{ valid: boole
     );
 
     if (isValid) {
-      return { valid: true, studentId: payload.studentId };
+      return { valid: true, studentId };
     }
     
     return { valid: false };
@@ -82,3 +81,4 @@ export async function verifyQRPayload(rawString: string): Promise<{ valid: boole
     return { valid: false };
   }
 }
+

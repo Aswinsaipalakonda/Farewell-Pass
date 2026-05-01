@@ -21,21 +21,27 @@ export function ScannerView({ onScanSuccess, paused }: ScannerViewProps) {
     // 2. Start scanning if not paused
     if (!paused) {
       const config = { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
+        fps: 20, // Faster detection
+        qrbox: { width: 280, height: 280 },
+        aspectRatio: 1.0,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        }
       };
 
       html5QrCode.start(
-        { facingMode: "environment" }, // Force Back Camera
+        { facingMode: "environment" }, 
         config,
         (decodedText) => {
-          playBeep(); // Beep on success
+          // Play sound immediately on detection
+          playBeep(); 
+          
+          // Stop scanning and trigger success
           html5QrCode.stop().then(() => {
             onScanSuccess(decodedText);
           }).catch(console.error);
         },
-        () => { /* Continuous scanning errors ignored */ }
+        () => { /* Ignore errors */ }
       ).catch((err) => {
         console.error("Camera start failed:", err);
       });
