@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ScanLine, Users, QrCode, History } from 'lucide-react';
+import { LayoutDashboard, ScanLine, Users, QrCode, History, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -13,9 +13,16 @@ export function BottomNav() {
     { to: '/scan', icon: ScanLine, isPrimary: true },
     { to: '/generate', icon: QrCode, adminOnly: true },
     { to: '/logs', icon: History },
+    { to: '#logout', icon: LogOut, crOnly: true },
   ];
 
-  const filteredLinks = links.filter(link => !link.adminOnly || role === 'admin');
+  const { logout } = useAuth();
+
+  const filteredLinks = links.filter(link => {
+    if (link.adminOnly) return role === 'admin';
+    if (link.crOnly) return role === 'cr';
+    return true;
+  });
 
   return (
     <div className="fixed bottom-0 left-0 w-full lg:hidden bg-bg-surface/90 backdrop-blur-2xl border-t border-border-glass z-50 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
@@ -46,6 +53,19 @@ export function BottomNav() {
           }
 
           const isActive = pathname === link.to;
+          
+          if (link.to === '#logout') {
+            return (
+              <button
+                key="logout"
+                onClick={logout}
+                className="flex flex-col items-center justify-center w-full h-full transition-all duration-200 relative active:scale-95 text-text-muted hover:text-accent-red"
+              >
+                <link.icon className="w-5 h-5" />
+              </button>
+            );
+          }
+
           return (
             <Link
               key={link.to}
