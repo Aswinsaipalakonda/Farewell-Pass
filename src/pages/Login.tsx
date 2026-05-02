@@ -11,7 +11,7 @@ import { Loader2, ArrowRight } from 'lucide-react';
 
 export function Login() {
   const { user, login } = useAuth();
-  const [email, setEmail] = useState('admin@farewellpass.com');
+  const [email, setEmail] = useState('cr@farewell.com');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
