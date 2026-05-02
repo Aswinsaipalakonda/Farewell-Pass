@@ -17,6 +17,7 @@ export function useStats() {
       // In a real production app with thousands of records, we might use server-side aggregation.
       // For ~1000 event scale, we can fetch all or count documents.
       const total = await databases.listDocuments(DB_ID, STUDENTS_COLLECTION_ID, [Query.limit(1000)]);
+      console.log('Stats fetched:', total.documents.length, 'students found');
       
       let checkedInCount = 0;
       let foodCollectedCount = 0;
@@ -26,11 +27,12 @@ export function useStats() {
         if (doc.foodCollected) foodCollectedCount++;
       });
 
+      const actualTotal = total.documents.length;
       setStats({
-        totalRegistered: total.total,
+        totalRegistered: actualTotal,
         checkedIn: checkedInCount,
         foodCollected: foodCollectedCount,
-        pending: total.total - checkedInCount,
+        pending: actualTotal - checkedInCount,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);

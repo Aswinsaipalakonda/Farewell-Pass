@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useStudents } from '@/hooks/useStudents';
+import { useAuth } from '@/hooks/useAuth';
 import { StudentTable } from '@/components/students/StudentTable';
 import { StudentCard } from '@/components/students/StudentCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, XCircle, Plus, UserPlus } from 'lucide-react';
+import { Search, XCircle, Plus, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Dialog, 
@@ -22,12 +23,28 @@ import { toast } from 'sonner';
 type FilterType = 'All' | 'Checked In' | 'Food Done' | 'Pending';
 
 export function Students() {
-  const { students, loading, fetchStudents } = useStudents();
+  const { students, loading, fetchStudents, deleteStudent } = useStudents();
+  const { role } = useAuth();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('All');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
   const [newStudent, setNewStudent] = useState({ id: '', name: '', branch: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!studentToDelete) return;
+    
+    try {
+      console.log('Attempting to delete student document:', studentToDelete);
+      await deleteStudent(studentToDelete);
+      toast.success('Student removed from database');
+      setStudentToDelete(null);
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast.error(error.message || 'Failed to remove student. Check permissions.');
+    }
+  };
 
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,69 +110,71 @@ export function Students() {
           <p className="text-text-muted">Manage and view all registered students.</p>
         </div>
         
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-accent-purple hover:bg-accent-purple/90 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Student
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-bg-surface border-border-glass">
-            <DialogHeader>
-              <DialogTitle className="font-syne text-xl">Add New Student</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="sid">Student ID (Required)</Label>
-                <Input 
-                  id="sid" 
-                  placeholder="e.g. 21A91A0501" 
-                  value={newStudent.id}
-                  onChange={(e) => setNewStudent({...newStudent, id: e.target.value})}
-                  className="bg-bg-base border-border-glass"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input 
-                  id="name" 
-                  placeholder="e.g. John Doe" 
-                  value={newStudent.name}
-                  onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
-                  className="bg-bg-base border-border-glass"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="branch">Branch / Department</Label>
-                <Input 
-                  id="branch" 
-                  placeholder="e.g. CSE" 
-                  value={newStudent.branch}
-                  onChange={(e) => setNewStudent({...newStudent, branch: e.target.value})}
-                  className="bg-bg-base border-border-glass"
-                />
-              </div>
-              <DialogFooter className="pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsAddDialogOpen(false)}
-                  className="border-border-glass"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-accent-purple hover:bg-accent-purple/90 text-white"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Adding...' : 'Add Student'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {role === 'admin' && (
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-accent-purple hover:bg-accent-purple/90 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Student
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-bg-surface border-border-glass">
+              <DialogHeader>
+                <DialogTitle className="font-syne text-xl">Add New Student</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddStudent} className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sid">Student ID (Required)</Label>
+                  <Input 
+                    id="sid" 
+                    placeholder="e.g. 21A91A0501" 
+                    value={newStudent.id}
+                    onChange={(e) => setNewStudent({...newStudent, id: e.target.value})}
+                    className="bg-bg-base border-border-glass"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="e.g. John Doe" 
+                    value={newStudent.name}
+                    onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
+                    className="bg-bg-base border-border-glass"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="branch">Branch / Department</Label>
+                  <Input 
+                    id="branch" 
+                    placeholder="e.g. CSE" 
+                    value={newStudent.branch}
+                    onChange={(e) => setNewStudent({...newStudent, branch: e.target.value})}
+                    className="bg-bg-base border-border-glass"
+                  />
+                </div>
+                <DialogFooter className="pt-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsAddDialogOpen(false)}
+                    className="border-border-glass"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-accent-purple hover:bg-accent-purple/90 text-white"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Adding...' : 'Add Student'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </header>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -188,6 +207,25 @@ export function Students() {
         Showing {filteredStudents.length} of {students.length} students
       </div>
 
+      <Dialog open={!!studentToDelete} onOpenChange={(open) => !open && setStudentToDelete(null)}>
+        <DialogContent className="bg-bg-surface border-border-glass">
+          <DialogHeader>
+            <DialogTitle className="font-syne text-xl">Confirm Removal</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-text-muted">Are you sure you want to remove this student? This action cannot be undone.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStudentToDelete(null)} className="border-border-glass">
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} className="bg-accent-red hover:bg-accent-red/90 text-white">
+              Remove Student
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl bg-bg-surface/50" />)}
@@ -206,11 +244,18 @@ export function Students() {
       ) : (
         <>
           <div className="hidden lg:block">
-            <StudentTable students={filteredStudents} />
+            <StudentTable 
+              students={filteredStudents} 
+              onDelete={role === 'admin' ? setStudentToDelete : undefined} 
+            />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
             {filteredStudents.map(student => (
-              <StudentCard key={student.$id} student={student} />
+              <StudentCard 
+                key={student.$id} 
+                student={student} 
+                onDelete={role === 'admin' ? setStudentToDelete : undefined} 
+              />
             ))}
           </div>
         </>

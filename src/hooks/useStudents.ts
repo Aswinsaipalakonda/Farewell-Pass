@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { databases, DB_ID, STUDENTS_COLLECTION_ID } from '@/lib/appwrite';
+import { client, databases, DB_ID, STUDENTS_COLLECTION_ID } from '@/lib/appwrite';
 import { Student } from '@/types';
 import { Query } from 'appwrite';
 
@@ -10,7 +10,6 @@ export function useStudents() {
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-      // Assuming maximum of 1000 for event
       const response = await databases.listDocuments(
         DB_ID,
         STUDENTS_COLLECTION_ID,
@@ -20,8 +19,8 @@ export function useStudents() {
       const parsedStudents = response.documents.map(doc => ({
         $id: doc.$id,
         studentId: doc.studentId,
-        name: doc.name,
-        branch: doc.branch,
+        name: doc.name || '',
+        branch: doc.branch || '',
         checkedIn: doc.checkedIn,
         foodCollected: doc.foodCollected,
         checkInTime: doc.checkInTime,
@@ -38,7 +37,30 @@ export function useStudents() {
 
   useEffect(() => {
     fetchStudents();
+
+    // Realtime subscription
+    const unsubscribe = client.subscribe(
+      `databases.${DB_ID}.collections.${STUDENTS_COLLECTION_ID}.documents`,
+      (response) => {
+        // Just re-fetch to keep it simple and accurate
+        fetchStudents();
+      }
+    );
+
+    return () => unsubscribe();
   }, [fetchStudents]);
 
-  return { students, loading, fetchStudents };
+  const deleteStudent = async (documentId: string) => {
+    try {
+      console.log('Hook: Deleting student:', documentId);
+      await databases.deleteDocument(DB_ID, STUDENTS_COLLECTION_ID, documentId);
+      setStudents(prev => prev.filter(s => s.$id !== documentId));
+      return true;
+    } catch (error) {
+      console.error('Hook: Delete error:', error);
+      throw error;
+    }
+  };
+
+  return { students, loading, fetchStudents, deleteStudent };
 }

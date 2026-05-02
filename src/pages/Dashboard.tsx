@@ -4,6 +4,7 @@ import { StatCard } from '@/components/dashboard/StatCard';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Users, UserCheck, Utensils, Clock, LogOut } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -16,12 +17,12 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { getGreeting } from '@/lib/utils';
+import { getGreeting, cn } from '@/lib/utils';
 
 export function Dashboard() {
   const { stats, loading: statsLoading } = useStats();
   const { students, loading: studentsLoading } = useStudents();
-  const { logout } = useAuth();
+  const { logout, role, user } = useAuth();
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -30,7 +31,22 @@ export function Dashboard() {
       <header className="flex flex-col gap-4">
         <div className="flex items-start justify-between w-full">
           <div>
-            <h1 className="font-syne text-2xl lg:text-3xl font-bold">{getGreeting()}, CR 👋</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-syne text-2xl lg:text-3xl font-bold">
+                {getGreeting()}, {user?.name?.replace(' Account', '') || role.toUpperCase()} 👋
+              </h1>
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase",
+                  role === 'admin' 
+                    ? "bg-accent-purple/10 text-accent-purple border-accent-purple/20" 
+                    : "bg-bg-surface/50 text-text-muted border-border-glass"
+                )}
+              >
+                {role}
+              </Badge>
+            </div>
             <p className="text-text-muted mt-1">{today}</p>
           </div>
 

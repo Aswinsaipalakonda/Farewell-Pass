@@ -15,16 +15,18 @@ import {
 } from "@/components/ui/dialog";
 
 export function Sidebar() {
+  const { logout, role } = useAuth();
   const { pathname } = useLocation();
-  const { logout } = useAuth();
 
-  const links = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/scan', icon: ScanLine, label: 'Scan QR' },
-    { to: '/students', icon: Users, label: 'Students' },
-    { to: '/generate', icon: QrCode, label: 'Generate QR' },
-    { to: '/logs', icon: History, label: 'Activity Logs' },
+  const menuItems = [
+    { label: 'Dashboard', icon: LayoutDashboard, to: '/dashboard' },
+    { label: 'Scan QR', icon: ScanLine, to: '/scan' },
+    { label: 'Students', icon: Users, to: '/students' },
+    { label: 'Generate QR', icon: QrCode, to: '/generate', adminOnly: true },
+    { label: 'Activity Logs', icon: History, to: '/logs' },
   ];
+
+  const filteredItems = menuItems.filter(item => !item.adminOnly || role === 'admin');
 
   return (
     <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 border-r border-border-glass bg-bg-surface z-40">
@@ -34,25 +36,25 @@ export function Sidebar() {
         </h1>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        {links.map((link) => {
-          const isActive = pathname === link.to;
-          return (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium",
-                isActive 
-                  ? "bg-accent-purple text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]" 
-                  : "text-text-muted hover:text-text-primary hover:bg-bg-glass"
-              )}
-            >
-              <link.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-text-muted")} />
-              {link.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-4 space-y-2">
+        {filteredItems.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
+              pathname === link.to
+                ? "bg-accent-purple/10 text-accent-purple shadow-[0_0_15px_rgba(147,51,234,0.1)]"
+                : "text-text-muted hover:text-text-primary hover:bg-bg-glass"
+            )}
+          >
+            <link.icon className={cn(
+              "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+              pathname === link.to ? "text-accent-purple" : "text-text-muted group-hover:text-text-primary"
+            )} />
+            <span className="font-medium font-syne">{link.label}</span>
+          </Link>
+        ))}
       </nav>
 
       <div className="p-4 border-t border-border-glass">

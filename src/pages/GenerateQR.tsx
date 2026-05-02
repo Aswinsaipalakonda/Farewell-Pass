@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,8 +15,8 @@ interface QRItem {
   id: string;
   dataUrl: string;
 }
-
 export function GenerateQR() {
+  const { role, loading } = useAuth();
   const [inputIds, setInputIds] = useState('');
   const [qrItems, setQrItems] = useState<QRItem[]>([]);
   const [generating, setGenerating] = useState(false);

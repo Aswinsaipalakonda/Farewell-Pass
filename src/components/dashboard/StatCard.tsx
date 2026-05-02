@@ -38,15 +38,15 @@ export function StatCard({ title, value, total, icon: Icon, colorClass, bgClass 
   return (
     <Card className="glass-card overflow-hidden animate-fade-in-up">
       <CardContent className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-text-muted font-sans">{title}</p>
-            <div className="text-3xl font-bold font-syne tracking-tight">
+        <div className="flex justify-between items-center">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-text-muted font-sans tracking-wide uppercase">{title}</p>
+            <div className="text-4xl font-bold font-syne tracking-tight tabular-nums">
               {animatedValue}
             </div>
           </div>
-          <div className={cn("p-3 rounded-full", bgClass)}>
-            <Icon className={cn("w-5 h-5", colorClass)} />
+          <div className={cn("p-3.5 rounded-2xl shadow-inner", bgClass)}>
+            <Icon className={cn("w-6 h-6", colorClass)} />
           </div>
         </div>
         {total !== undefined && (

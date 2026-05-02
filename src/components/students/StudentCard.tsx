@@ -2,12 +2,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { Student } from "@/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 interface StudentCardProps {
   student: Student;
+  onDelete?: (id: string) => void;
 }
 
-export function StudentCard({ student }: StudentCardProps) {
+export function StudentCard({ student, onDelete }: StudentCardProps) {
   const isPending = !student.checkedIn;
   const isCheckinOnly = student.checkedIn && !student.foodCollected;
   const isCompleted = student.checkedIn && student.foodCollected;
@@ -27,7 +30,7 @@ export function StudentCard({ student }: StudentCardProps) {
 
       <Avatar className="h-12 w-12 border border-border-glass ml-2">
         <AvatarFallback className="bg-bg-surface text-sm font-medium">
-          {student.name.substring(0, 2).toUpperCase()}
+          {(student.name || student.studentId || "ST").substring(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
 
@@ -57,6 +60,17 @@ export function StudentCard({ student }: StudentCardProps) {
         >
           {student.foodCollected ? 'Food ✓' : 'Food'}
         </Badge>
+        
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-text-muted hover:text-accent-red hover:bg-accent-red/10 mt-2"
+            onClick={() => onDelete?.(student.$id)}
+          >
+            <Trash2 className="w-3 h-3" />
+          </Button>
+        )}
       </div>
     </div>
   );

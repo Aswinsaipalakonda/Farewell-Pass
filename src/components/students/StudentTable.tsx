@@ -1,14 +1,16 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Student } from "@/types";
-import { CheckCircle2, Clock } from "lucide-react";
+import { CheckCircle2, Clock, Trash2 } from "lucide-react";
 
 interface StudentTableProps {
   students: Student[];
+  onDelete?: (id: string) => void;
 }
 
-export function StudentTable({ students }: StudentTableProps) {
+export function StudentTable({ students, onDelete }: StudentTableProps) {
   const formatTime = (isoString?: string) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
@@ -25,16 +27,17 @@ export function StudentTable({ students }: StudentTableProps) {
             <TableHead className="text-text-muted">Branch</TableHead>
             <TableHead className="text-text-muted">Check-in</TableHead>
             <TableHead className="text-text-muted">Food</TableHead>
+            {onDelete && <TableHead className="text-text-muted text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
           {students.map((student) => (
-            <TableRow key={student.$id} className="border-border-glass hover:bg-bg-surface/50 transition-colors">
+            <TableRow key={student.$id} className="border-border-glass hover:bg-bg-surface/50 transition-colors group">
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8 border border-border-glass">
                     <AvatarFallback className="bg-bg-surface text-xs text-text-primary">
-                      {(student.name || student.studentId).substring(0, 2).toUpperCase()}
+                      {(student.name || student.studentId || "ST").substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <span className="font-medium">{student.name || student.studentId}</span>
@@ -66,6 +69,18 @@ export function StudentTable({ students }: StudentTableProps) {
                   </Badge>
                 )}
               </TableCell>
+              {onDelete && (
+                <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-text-muted hover:text-accent-red hover:bg-accent-red/10 opacity-0 group-hover:opacity-100 transition-all"
+                    onClick={() => onDelete?.(student.$id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

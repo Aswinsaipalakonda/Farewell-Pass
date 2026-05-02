@@ -5,6 +5,7 @@ import type { Models } from 'appwrite';
 interface AuthContextType {
   user: Models.User<Models.Preferences> | null;
   loading: boolean;
+  role: 'admin' | 'cr';
   login: (email: string, pass: string) => Promise<boolean>;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+  const [role, setRole] = useState<'admin' | 'cr'>('cr');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,8 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const sessionUser = await account.get();
       setUser(sessionUser);
+      // Check for admin label
+      if (sessionUser.labels && sessionUser.labels.includes('admin')) {
+        setRole('admin');
+      } else {
+        setRole('cr');
+      }
     } catch (error) {
       setUser(null);
+      setRole('cr');
     } finally {
       setLoading(false);
     }
@@ -56,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, checkSession }}>
+    <AuthContext.Provider value={{ user, loading, role, login, logout, checkSession }}>
       {children}
     </AuthContext.Provider>
   );

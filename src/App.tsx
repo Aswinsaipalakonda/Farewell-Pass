@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthGuard } from '@/guards/AuthGuard';
+import { AdminGuard } from '@/guards/AdminGuard';
 import { Login } from '@/pages/Login';
 import { Dashboard } from '@/pages/Dashboard';
 import { Scan } from '@/pages/Scan';
@@ -23,7 +24,9 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/scan" element={<Scan />} />
               <Route path="/students" element={<Students />} />
-              <Route path="/generate" element={<GenerateQR />} />
+              <Route element={<AdminGuard />}>
+                <Route path="/generate" element={<GenerateQR />} />
+              </Route>
               <Route path="/logs" element={<Logs />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Route>
